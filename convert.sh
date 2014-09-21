@@ -19,3 +19,6 @@ sed -i -e "s/NAME/$PROJ/" setup.py
 find $PROJ tests -type f -exec sed -i -e "s/NAME/$PROJ/" {} \;
 find $PROJ tests -type f -exec sed -i -e "s/myfile/$MODULE/" {} \;
 
+git add tests/$PROJ $PROJ
+git commit -a -m "Initial setup"
+
