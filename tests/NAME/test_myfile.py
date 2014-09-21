@@ -1,7 +1,5 @@
-
-
 from nose.tools import *
-import NAME
+from NAME import myfile
 
 
 def setup():
