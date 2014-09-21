@@ -12,7 +12,7 @@ config = {
     'author_email': 'gers',
     'version:': '0.1',
     'install_requires': ['nose'],
-    'packages': ['NAME'],
+    'packages': ['shopping_scraper'],
     'scripts': [],
     'name': 'projectname'
 }
