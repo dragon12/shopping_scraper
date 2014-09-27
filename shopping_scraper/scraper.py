@@ -1,6 +1,8 @@
 import requests
 import re
 import bs4
+from multiprocessing import Pool
+
 
 root_url = 'http://pyvideo.org'
 index_url = root_url + '/category/50/pycon-us-2014'
@@ -14,14 +16,21 @@ def get_video_page_urls():
 
 
 def get_video_data(video_page_url):
+    print "getting data from", video_page_url
     video_data = {}
     response = requests.get(root_url + video_page_url)
     soup = bs4.BeautifulSoup(response.text)
     video_data['title'] = soup.select('div#videobox h3')[0].get_text()
     video_data['speakers'] = [
         a.get_text() for a in soup.select('div#sidebar a[href^=/speaker]')]
-    video_data['youtube_url'] = soup.select(
-        'div#sidebar a[href^=http://www.youtube.com]')[0].get_text()
+
+    youtube_links = soup.select(
+        'div#sidebar a[href^=http://www.youtube.com]')
+
+    if (not youtube_links):
+        return video_data
+
+    video_data['youtube_url'] = youtube_links[0].get_text()
 
     soup = bs4.BeautifulSoup(requests.get(video_data['youtube_url']).text)
 
@@ -43,14 +52,17 @@ def get_video_data(video_page_url):
 
     return video_data
 
-urls = get_video_page_urls()
 
-# root_url + urls.pop()
-firstUrl = "/video/2623/python-epiphanies-1"
-print "firstUrl =", firstUrl
+def show_video_stats():
+    pool = Pool(8)
+    urls = get_video_page_urls()
 
-# print bs4.BeautifulSoup(requests.get(firstUrl).text)
+    results = pool.map(get_video_data, urls)
+    # results = map(get_video_data, urls)
+    return results
 
-data = get_video_data(firstUrl)
+video_stats = show_video_stats()
 
-print data
+print """stats:
+%s
+""" % video_stats
